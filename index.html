@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>WebScoket</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+			<h1>Chat Room</h1>
+			<input id="sendTxt" type="text" />
+			<button id="sendbtn">发送</button>
+			<script type="text/javascript">
+				//首先取得一个实例-监听本地的3000端口 ws协议
+				var socket=io("ws://localhost:3000/");
+				function showMessage(type,data){
+					var div=document.createElement("div");
+					div.innerHTML=type+":"+data;
+					if(type=="enter"){
+						div.style.color="greenyellow";
+					}else if(type=="leave"){
+						div.style.color="red";
+					}
+					document.body.appendChild(div);
+				};
+				document.getElementById("sendbtn").onclick=function(){
+					var txt=document.getElementById("sendTxt").value;
+					if(txt){
+						socket.emit("message",txt);
+					}
+				};
+				//当实例收到enter类型的消息的时候--以此类推
+				socket.on("enter",function(data){
+					showMessage("enter",data);
+				});
+				socket.on("message",function(data){
+					showMessage("message",data);
+				});
+				socket.on("leave",function(data){
+					showMessage("leave",data);
+				});
+			</script>
+	</body>
+</html>
